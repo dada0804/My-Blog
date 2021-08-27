@@ -22,6 +22,11 @@ $email_body = "Hello, you have received a new message.\n\n"."Here are the detail
 $headers = "From: noreply@yanmablog.com\n"; // This is the email address the generated message will be from. We recommend using something like noreply@yourdomain.com.
 $headers .= "Reply-To: $email_address";
 
-$result = mail($to,$email_subject,$email_body,$headers);
-die($result);
+// $result = mail($to,$email_subject,$email_body,$headers);
+if (mail($to,$email_subject,$email_body,$headers)){
+    return true;
+}else{
+    return false;
+}
+// die($result);
 ?>
