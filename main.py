@@ -13,12 +13,12 @@ from flask import abort
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY','8BYkEfBA6O6donzWlSihBXox7C0sKR6b')
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db= SQLAlchemy(app)
 
@@ -136,10 +136,10 @@ def login():
     if form.validate_on_submit():
         user=User.query.filter_by(email=form.email.data).first()
         if not user:
-            flash("The email doesn't right, please try again.")
+            flash("The email is incorrect. Please try again.")
             return redirect(url_for('login'))
         elif not check_password_hash(user.password,form.password.data):
-            flash("Password incorrect, please try again.")
+            flash("Password incorrect. Please try again.")
             return redirect(url_for('login'))
         else:
             login_user(user)
@@ -159,7 +159,7 @@ def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
     if form.validate_on_submit():
         if not current_user.is_authenticated:
-            flash('You need to login to comment!')
+            flash('You need to log in to comment : )')
             return redirect(url_for('login_in'))
 
         new_comment=Comment(
@@ -202,7 +202,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>",methods=['GET','POST'])
 @admin_only
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
@@ -210,14 +210,13 @@ def edit_post(post_id):
         title=post.title,
         subtitle=post.subtitle,
         img_url=post.img_url,
-        author=post.author,
+        author=post.author.name,
         body=post.body
     )
     if edit_form.validate_on_submit():
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
@@ -225,7 +224,7 @@ def edit_post(post_id):
     return render_template("make-post.html", form=edit_form)
 
 
-@app.route("/delete/<int:post_id>")
+@app.route("/delete/<int:post_id>",methods=['GET','POST'])
 @admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
