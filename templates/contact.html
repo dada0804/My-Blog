@@ -1,4 +1,6 @@
 {% include "header.html" %}
+ {{ super() }}
+  <script src="{{ url_for('static', filename='js/contact_me.js')}}"></script>
 
   <!-- Page Header -->
   <header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg')}}')">
@@ -59,7 +61,6 @@
       </div>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='js/contact_me.js')}}"></script>
 
   <hr>
 
